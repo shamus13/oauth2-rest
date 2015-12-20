@@ -1,0 +1,134 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="oauth2-rest" default="compile" basedir=".">
+
+    <!-- Project Structure -->
+    <property name="jdk.version" value="1.8"/>
+    <property name="src.dir" location="src/main/java"/>
+    <property name="resources.dir" location="src/main/resources"/>
+    <property name="webapp.dir" location="src/main/webapp"/>
+    <property name="web.dir" value="war"/>
+    <property name="web.classes.dir" location="${web.dir}/WEB-INF/classes"/>
+    <property name="web.lib.dir" location="${web.dir}/WEB-INF/lib"/>
+    <property name="test.dir" location="src/test/java"/>
+    <property name="test.resources.dir" location="src/test/resources"/>
+    <property name="test.classes.dir" location="test"/>
+    <property name="report.dir" location="report"/>
+    <property name="dist.dir" location="dist"/>
+    <property name="lib.dir" location="lib"/>
+
+    <property name="version" value="0.1"/>
+    <tstamp prefix="build-info">
+        <format property="now" pattern="dd-MM-yyyy HH:mm:ss z" locale="en"/>
+    </tstamp>
+
+    <!-- ivy start -->
+    <target name="resolve" description="retrieve dependencies with ivy">
+        <ivy:retrieve/>
+
+        <ivy:cachepath pathid="compile.path" conf="compile,provided"/>
+        <ivy:cachepath pathid="runtime.path" conf="runtime,provided"/>
+        <ivy:cachepath pathid="test.path" conf="test,provided"/>
+
+    </target>
+
+    <target name="compile" depends="init, resolve" description="compile source code">
+        <mkdir dir="${web.classes.dir}"/>
+
+        <copy todir="${web.classes.dir}" overwrite="false">
+            <fileset dir="${resources.dir}"/>
+            <filterset>
+                <filter token="PROJECT" value="${ant.project.name}"/>
+            </filterset>
+        </copy>
+
+        <javac destdir="${web.classes.dir}" source="${jdk.version}"
+               target="${jdk.version}" debug="true"
+               includeantruntime="false" classpathref="compile.path">
+            <src path="${src.dir}"/>
+        </javac>
+    </target>
+
+    <target name="dist" depends="compile" description="build war">
+        <ivy:retrieve conf="runtime" pattern="${web.lib.dir}/[artifact].[ext]"/>
+
+        <copy todir="${web.dir}" overwrite="false">
+            <fileset dir="${webapp.dir}"/>
+            <filterset>
+                <filter token="PROJECT" value="${ant.project.name}"/>
+                <filter token="VERSION" value="${version}"/>
+                <filter token="NOW" value="${build-info.now}"/>
+            </filterset>
+        </copy>
+
+        <war warfile="${dist.dir}/${ant.project.name}-${version}.war" webxml="${web.dir}/WEB-INF/web.xml">
+            <classes dir="${web.classes.dir}"/>
+            <fileset dir="${webapp.dir}">
+                <!-- Need to exclude it since webxml is an attribute of the war tag above -->
+                <exclude name="WEB-INF/web.xml"/>
+            </fileset>
+            <lib dir="${web.lib.dir}"/>
+        </war>
+    </target>
+
+    <target name="test-compile" depends="compile" description="compile source code">
+        <mkdir dir="${test.dir}"/>
+
+        <copy todir="${test.classes.dir}" overwrite="false">
+            <fileset dir="${test.resources.dir}"/>
+            <filterset>
+                <filter token="PROJECT" value="${ant.project.name}"/>
+            </filterset>
+        </copy>
+
+        <javac destdir="${test.classes.dir}" source="${jdk.version}"
+               target="${jdk.version}" debug="true"
+               includeantruntime="false" classpathref="test.path">
+            <src path="${test.dir}"/>
+        </javac>
+    </target>
+
+    <target name="junit" depends="test-compile">
+
+        <junit>
+            <formatter type="plain" usefile="false"/>
+            <formatter type="plain"/>
+
+            <classpath>
+                <path refid="test.path"/>
+                <pathelement location="${test.classes.dir}"/>
+                <pathelement location="${web.classes.dir}"/>
+            </classpath>
+
+            <batchtest>
+                <fileset dir="${test.classes.dir}" includes="**/Test*.class"/>
+            </batchtest>
+
+            <batchtest fork="yes" todir="${report.dir}">
+                <fileset dir="${test.classes.dir}">
+                    <include name="**/*Test*.class"/>
+                </fileset>
+            </batchtest>
+
+        </junit>
+    </target>
+
+    <target name="init">
+        <mkdir dir="${src.dir}"/>
+        <mkdir dir="${web.classes.dir}"/>
+        <mkdir dir="${web.lib.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+        <mkdir dir="${report.dir}"/>
+        <mkdir dir="${lib.dir}"/>
+        <mkdir dir="${test.classes.dir}"/>
+    </target>
+
+    <target name="clean" description="clean up">
+        <delete dir="${web.classes.dir}"/>
+        <delete dir="${web.lib.dir}"/>
+        <delete dir="${dist.dir}"/>
+        <delete dir="${report.dir}"/>
+        <delete dir="${test.classes.dir}"/>
+        <delete dir="${web.dir}"/>
+        <delete dir="${lib.dir}"/>
+    </target>
+
+</project>

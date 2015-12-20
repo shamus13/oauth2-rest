@@ -1,0 +1,21 @@
+<Context cookies="false">
+    <Environment name="oauth2-rest/logback"
+                 value="file://${user.home}/services/conf/logback.xml"
+                 type="java.lang.String"
+                 override="false"/>
+
+    <Environment name="oauth2-rest/client-id"
+                 value="client_id"
+                 type="java.lang.String"
+                 override="false"/>
+
+    <Environment name="oauth2-rest/client-password"
+                 value="password"
+                 type="java.lang.String"
+                 override="false"/>
+
+    <Environment name="oauth2-rest/validation-endpoint"
+                 value="https://localhost/module.php/oauth2server/authorization/validate.php"
+                 type="java.lang.String"
+                 override="false"/>
+</Context>
