@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>Apache Tomcat WebSocket Examples: Echo</title>
+    <title>Websocket example</title>
     <script type="application/javascript"><![CDATA[
         "use strict";
 
@@ -89,6 +89,10 @@
     ]]></script>
 </head>
 <body>
+<p>
+    Sample websocket client based on the apache tomcat websocket examples.
+</p>
+
 <div class="noscript"><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websockets rely on Javascript being enabled. Please enable
     Javascript and reload this page!</h2></div>
 <div>
@@ -111,7 +115,7 @@
             <textarea id="message" style="width: 350px">Here is a message!</textarea>
         </div>
         <div>
-            <button id="echo" onclick="echo();" disabled="disabled">Echo message</button>
+            <button id="echo" onclick="websocket();" disabled="disabled">Echo message</button>
         </div>
     </div>
     <div id="console-container">
