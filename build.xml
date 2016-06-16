@@ -111,6 +111,12 @@
         </junit>
     </target>
 
+    <target name="report" depends="init">
+        <mkdir dir="report" />
+        <ivy:resolve type="${ivy.resolve.types}" />
+        <ivy:report todir="report" />
+    </target>
+
     <target name="init">
         <mkdir dir="${src.dir}"/>
         <mkdir dir="${web.classes.dir}"/>
